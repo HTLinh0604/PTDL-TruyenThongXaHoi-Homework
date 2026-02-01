@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐕🐱 AI Dog Cat Classifier</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --dog-gradient: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
+            --cat-gradient: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            --text-color: #333;
+            --bg-color: #f0f2f5;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--primary-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Ensure padding is clean */
+            color: var(--text-color);
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow);
+            -webkit-backdrop-filter: blur(10px); /* Fix for Safari/older browsers */
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            color: #4a4a4a;
+            font-size: 1.8rem;
+        }
+
+        h1 i {
+            margin: 0 5px;
+        }
+
+        /* API Section */
+        .api-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            border: 1px solid #eee;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .api-box input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+
+        .api-box input:focus {
+            border-color: #764ba2;
+        }
+
+        .btn-check {
+            padding: 0 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-check:hover {
+            background: #218838;
+        }
+
+        #apiStatus {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        #apiStatus.ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        #apiStatus.err { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* Upload Section */
+        .upload-box {
+            border: 3px dashed #cbd5e0;
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #fafbfc;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-box:hover, .upload-box.drag {
+            border-color: #764ba2;
+            background: #f3f0ff;
+            transform: translateY(-2px);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #764ba2;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .upload-text {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .upload-hint {
+            display: block;
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* Preview */
+        .preview-container {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 16px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin: 0 auto;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+            display: none; /* Hidden by default */
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        .btn-predict {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .btn-predict:hover {
+            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .btn-reset {
+            background: #fff;
+            color: #666;
+            border: 2px solid #eee;
+        }
+
+        .btn-reset:hover {
+            background: #f8f9fa;
+            border-color: #ddd;
+            color: #333;
+        }
+
+        /* Loading */
+        #loading {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #764ba2;
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+            margin: 0 auto 15px;
+        }
+
+        .loading-text {
+            color: #764ba2;
+            font-weight: 500;
+        }
+
+        /* Result */
+        #result {
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 25px;
+            display: none;
+            animation: slideUp 0.5s ease;
+            color: #333;
+        }
+
+        #result.dog {
+            background: var(--dog-gradient);
+            color: #5d3a3a;
+        }
+
+        #result.cat {
+            background: var(--cat-gradient);
+            color: #2c525f;
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            display: block;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .result-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .result-conf {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Error */
+        #error {
+            background: #fff5f5;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            border: 1px solid #feb2b2;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 25px; }
+            .input-group { flex-direction: column; }
+            .btn-check { width: 100%; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-paw"></i> Dog vs Cat AI</h1>
+        
+        <!-- API URL -->
+        <div class="api-box">
+            <div class="input-group">
+                <input type="text" id="apiUrl" placeholder="Dán URL Colab/Ngrok vào đây...">
+                <button class="btn-check" onclick="checkAPI()"><i class="fas fa-link"></i> Kết nối</button>
+            </div>
+            <div id="apiStatus"></div>
+        </div>
+        
+        <!-- Upload -->
+        <div class="upload-box" id="uploadBox">
+            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+            <p class="upload-text">Chọn ảnh hoặc kéo thả vào đây</p>
+            <span class="upload-hint">Hỗ trợ: JPG, PNG, WEBP</span>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        
+        <!-- Preview -->
+        <div class="preview-container">
+            <img id="preview" alt="Preview Image">
+        </div>
+        
+        <!-- Buttons -->
+        <button class="btn btn-predict" id="predictBtn" onclick="predict()">
+            <i class="fas fa-search"></i> Phân Tích Ngay
+        </button>
+        
+        <!-- Loading -->
+        <div id="loading">
+            <div class="spinner"></div>
+            <p class="loading-text">Đang xử lý hình ảnh...</p>
+        </div>
+        
+        <!-- Result -->
+        <div id="result">
+            <div class="result-icon" id="resIcon"></div>
+            <div class="result-text" id="resText"></div>
+            <div class="result-conf" id="resConf"></div>
+        </div>
+        
+        <!-- Error -->
+        <div id="error"></div>
+        
+        <!-- Reset -->
+        <button class="btn btn-reset" id="resetBtn" onclick="reset()">
+            <i class="fas fa-redo"></i> Thử ảnh khác
+        </button>
+    </div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        let file = null;
+
+        // Upload events
+        $('uploadBox').onclick = () => $('fileInput').click();
+        $('fileInput').onchange = e => handleFile(e.target.files[0]);
+        
+        $('uploadBox').ondragover = e => { e.preventDefault(); $('uploadBox').classList.add('drag'); };
+        $('uploadBox').ondragleave = () => $('uploadBox').classList.remove('drag');
+        $('uploadBox').ondrop = e => { e.preventDefault(); $('uploadBox').classList.remove('drag'); handleFile(e.dataTransfer.files[0]); };
+
+        function handleFile(f) {
+            if (!f || !f.type.startsWith('image/')) return;
+            file = f;
+            const reader = new FileReader();
+            reader.onload = e => {
+                $('preview').src = e.target.result;
+                $('preview').style.display = 'block';
+                $('uploadBox').style.display = 'none';
+                $('predictBtn').style.display = 'block';
+                $('result').style.display = 'none';
+                $('error').style.display = 'none';
+            };
+            reader.readAsDataURL(f);
+        }
+
+        async function checkAPI() {
+            const url = $('apiUrl').value.trim();
+            if (!url) { showStatus('⚠️ Vui lòng nhập URL API!', false); return; }
+            
+            showStatus('⏳ Đang kiểm tra...', true); // Temporary status
+
+            try {
+                // Remove trailing slash if present for consistency
+                const cleanUrl = url.replace(/\/$/, "");
+                const res = await fetch(cleanUrl + '/health', { 
+                    headers: { 'ngrok-skip-browser-warning': '1' } 
+                });
+                
+                if (res.ok) showStatus('✅ Kết nối thành công!', true);
+                else showStatus('❌ Server phản hồi lỗi!', false);
+            } catch (e) {
+                showStatus('❌ Không thể kết nối đến server!', false);
+                console.error(e);
+            }
+        }
+
+        function showStatus(msg, ok) {
+            $('apiStatus').textContent = msg;
+            $('apiStatus').className = ok ? 'ok' : 'err';
+            $('apiStatus').style.display = 'block';
+        }
+
+        async function predict() {
+            const url = $('apiUrl').value.trim();
+            if (!url) { showError('Vui lòng nhập và kiểm tra URL API trước!'); return; }
+            if (!file) { showError('Vui lòng chọn một hình ảnh!'); return; }
+
+            $('predictBtn').style.display = 'none';
+            $('loading').style.display = 'block';
+            $('result').style.display = 'none';
+            $('error').style.display = 'none';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const cleanUrl = url.replace(/\/$/, "");
+
+                const res = await fetch(cleanUrl + '/predict', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'ngrok-skip-browser-warning': '1' }
+                });
+                const data = await res.json();
+                
+                $('loading').style.display = 'none';
+
+                if (data.success) {
+                    const isDog = data.prediction.toLowerCase() === 'dog';
+                    $('result').className = isDog ? 'dog' : 'cat';
+                    $('resIcon').textContent = isDog ? '🐕' : '🐱';
+                    $('resText').textContent = isDog ? 'Đây là CHÓ!' : 'Đây là MÈO!';
+                    $('resConf').textContent = 'Độ tin cậy: ' + data.confidence + '%';
+                    $('result').style.display = 'block';
+                    $('resetBtn').style.display = 'block';
+                } else {
+                    showError(data.error || 'Không nhận diện được kết quả.');
+                }
+            } catch (e) {
+                $('loading').style.display = 'none';
+                showError('Lỗi kết nối hoặc xử lý: ' + e.message);
+            }
+        }
+
+        function showError(msg) {
+            $('error').textContent = '⚠️ ' + msg;
+            $('error').style.display = 'block';
+            $('predictBtn').style.display = 'block';
+        }
+
+        function reset() {
+            file = null;
+            $('fileInput').value = '';
+            $('preview').style.display = 'none';
+            $('uploadBox').style.display = 'block';
+            $('predictBtn').style.display = 'none';
+            $('result').style.display = 'none';
+            $('resetBtn').style.display = 'none';
+            $('error').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
