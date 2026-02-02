@@ -1,362 +1,484 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🐕🐱 AI Dog Cat Classifier</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --dog-gradient: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
-            --cat-gradient: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
-            --text-color: #333;
-            --bg-color: #f0f2f5;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --dog-gradient: linear-gradient(135deg, #f472b6 0%, #fb923c 100%);
+            --cat-gradient: linear-gradient(135deg, #34d399 0%, #3b82f6 100%);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.3);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
             min-height: 100vh;
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px; /* Ensure padding is clean */
-            color: var(--text-color);
+            padding: 30px;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .container {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 40px;
-            max-width: 500px;
+            background: var(--glass-bg);
+            border-radius: 32px;
+            padding: 50px;
+            max-width: 600px;
             width: 100%;
-            box-shadow: var(--shadow);
-            -webkit-backdrop-filter: blur(10px); /* Fix for Safari/older browsers */
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s ease;
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                0 0 0 1px var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            display: block;
+            animation: bounce 2s ease infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: 700;
-            color: #4a4a4a;
-            font-size: 1.8rem;
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
         }
 
-        h1 i {
-            margin: 0 5px;
+        .subtitle {
+            color: #6b7280;
+            font-size: 1rem;
+            font-weight: 400;
         }
 
-        /* API Section */
-        .api-box {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            border: 1px solid #eee;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .api-box input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 2px solid #e1e1e1;
-            border-radius: 12px;
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
             font-size: 0.9rem;
-            transition: border-color 0.3s;
-            outline: none;
-        }
-
-        .api-box input:focus {
-            border-color: #764ba2;
-        }
-
-        .btn-check {
-            padding: 0 20px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
             font-weight: 500;
-            transition: background 0.3s;
-            white-space: nowrap;
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease;
         }
 
-        .btn-check:hover {
-            background: #218838;
+        .status-badge.connecting {
+            background: #fef3c7;
+            color: #92400e;
         }
 
-        #apiStatus {
-            margin-top: 10px;
-            padding: 10px 15px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            display: none;
-            text-align: center;
-            animation: fadeIn 0.3s ease;
+        .status-badge.connected {
+            background: #d1fae5;
+            color: #065f46;
         }
 
-        #apiStatus.ok { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        #apiStatus.err { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status-badge.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-badge i {
+            font-size: 0.8rem;
+        }
+
+        .pulse {
+            animation: pulse 1.5s ease infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
 
         /* Upload Section */
         .upload-box {
-            border: 3px dashed #cbd5e0;
-            border-radius: 20px;
-            padding: 40px 20px;
+            border: 3px dashed #d1d5db;
+            border-radius: 24px;
+            padding: 60px 30px;
             text-align: center;
             cursor: pointer;
-            background: #fafbfc;
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
 
-        .upload-box:hover, .upload-box.drag {
-            border-color: #764ba2;
-            background: #f3f0ff;
-            transform: translateY(-2px);
+        .upload-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .upload-box:hover::before,
+        .upload-box.drag::before {
+            opacity: 1;
+        }
+
+        .upload-box:hover,
+        .upload-box.drag {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
         }
 
         .upload-icon {
-            font-size: 3rem;
-            color: #764ba2;
-            margin-bottom: 15px;
+            font-size: 4rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
             display: block;
+            position: relative;
         }
 
         .upload-text {
-            color: #666;
-            font-weight: 500;
+            color: #374151;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
         }
 
         .upload-hint {
             display: block;
-            font-size: 0.8rem;
-            color: #999;
-            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #9ca3af;
         }
 
         /* Preview */
         .preview-container {
             text-align: center;
-            margin: 20px 0;
+            margin: 30px 0;
             position: relative;
         }
 
         #preview {
             max-width: 100%;
-            max-height: 300px;
-            border-radius: 16px;
+            max-height: 350px;
+            border-radius: 20px;
             display: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             margin: 0 auto;
+            border: 4px solid white;
         }
 
         /* Buttons */
         .btn {
             width: 100%;
-            padding: 16px;
+            padding: 20px;
             border: none;
-            border-radius: 14px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
             cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-            display: none; /* Hidden by default */
-        }
-
-        .btn:active {
-            transform: translateY(1px);
-            box-shadow: none;
+            margin-top: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-predict {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
-        
+
         .btn-predict:hover {
-            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
-            transform: translateY(-1px);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-predict:active {
+            transform: translateY(0);
         }
 
         .btn-reset {
-            background: #fff;
-            color: #666;
-            border: 2px solid #eee;
+            background: white;
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         .btn-reset:hover {
-            background: #f8f9fa;
-            border-color: #ddd;
-            color: #333;
+            background: #f9fafb;
+            border-color: #d1d5db;
+            color: #374151;
+            transform: translateY(-2px);
+        }
+
+        .btn i {
+            margin-right: 10px;
         }
 
         /* Loading */
         #loading {
             text-align: center;
-            padding: 30px;
+            padding: 50px;
             display: none;
         }
-        
+
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #764ba2;
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f4f6;
+            border-top: 5px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
-            margin: 0 auto 15px;
+            margin: 0 auto 20px;
         }
 
         .loading-text {
-            color: #764ba2;
-            font-weight: 500;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1.1rem;
         }
 
         /* Result */
         #result {
-            padding: 30px;
-            border-radius: 20px;
+            padding: 40px;
+            border-radius: 24px;
             text-align: center;
-            margin-top: 25px;
+            margin-top: 30px;
             display: none;
-            animation: slideUp 0.5s ease;
-            color: #333;
+            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         #result.dog {
             background: var(--dog-gradient);
-            color: #5d3a3a;
         }
 
         #result.cat {
             background: var(--cat-gradient);
-            color: #2c525f;
         }
 
         .result-icon {
-            font-size: 4rem;
-            margin-bottom: 10px;
+            font-size: 5rem;
+            margin-bottom: 15px;
             display: block;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .result-text {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 800;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .result-conf {
-            font-size: 1.1rem;
-            opacity: 0.9;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
         }
 
         /* Error */
         #error {
-            background: #fff5f5;
-            color: #c53030;
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #dc2626;
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 25px;
             display: none;
-            border: 1px solid #feb2b2;
+            border: 1px solid #fecaca;
             text-align: center;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 1rem;
         }
 
         /* Animations */
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
+        /* Responsive */
         @media (max-width: 480px) {
-            .container { padding: 25px; }
-            .input-group { flex-direction: column; }
-            .btn-check { width: 100%; padding: 12px; }
+            .container {
+                padding: 30px 25px;
+                border-radius: 24px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .logo {
+                font-size: 3rem;
+            }
+
+            .upload-box {
+                padding: 40px 20px;
+            }
+
+            .upload-icon {
+                font-size: 3rem;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h1><i class="fas fa-paw"></i> Dog vs Cat AI</h1>
-        
-        <!-- API URL -->
-        <div class="api-box">
-            <div class="input-group">
-                <input type="text" id="apiUrl" placeholder="Dán URL Colab/Ngrok vào đây...">
-                <button class="btn-check" onclick="checkAPI()"><i class="fas fa-link"></i> Kết nối</button>
-            </div>
-            <div id="apiStatus"></div>
+        <!-- Header -->
+        <div class="header">
+            <span class="logo">🐕🐱</span>
+            <h1>Dog vs Cat</h1>
+            <p class="subtitle">Phân loại ảnh chó mèo</p>
         </div>
-        
+
+        <!-- Status -->
+        <div style="text-align: center;">
+            <div class="status-badge connecting" id="statusBadge">
+                <i class="fas fa-circle pulse"></i>
+                <span id="statusText">Đang kết nối...</span>
+            </div>
+        </div>
+
         <!-- Upload -->
         <div class="upload-box" id="uploadBox">
             <i class="fas fa-cloud-upload-alt upload-icon"></i>
-            <p class="upload-text">Chọn ảnh hoặc kéo thả vào đây</p>
-            <span class="upload-hint">Hỗ trợ: JPG, PNG, WEBP</span>
+            <p class="upload-text">Kéo thả ảnh hoặc nhấn để chọn</p>
+            <span class="upload-hint">Hỗ trợ: JPG, PNG, WEBP (tối đa 10MB)</span>
         </div>
         <input type="file" id="fileInput" accept="image/*" hidden>
-        
+
         <!-- Preview -->
         <div class="preview-container">
             <img id="preview" alt="Preview Image">
         </div>
-        
+
         <!-- Buttons -->
         <button class="btn btn-predict" id="predictBtn" onclick="predict()">
-            <i class="fas fa-search"></i> Phân Tích Ngay
+            <i class="fas fa-magic"></i> Phân Tích Ngay
         </button>
-        
+
         <!-- Loading -->
         <div id="loading">
             <div class="spinner"></div>
-            <p class="loading-text">Đang xử lý hình ảnh...</p>
+            <p class="loading-text">Đang phân tích hình ảnh...</p>
         </div>
-        
+
         <!-- Result -->
         <div id="result">
             <div class="result-icon" id="resIcon"></div>
             <div class="result-text" id="resText"></div>
             <div class="result-conf" id="resConf"></div>
         </div>
-        
+
         <!-- Error -->
         <div id="error"></div>
-        
+
         <!-- Reset -->
         <button class="btn btn-reset" id="resetBtn" onclick="reset()">
             <i class="fas fa-redo"></i> Thử ảnh khác
@@ -367,10 +489,37 @@
         const $ = id => document.getElementById(id);
         let file = null;
 
+        // API URL cố định (Ngrok Static Domain)
+        const API_URL = 'https://fidel-euchromatic-sheryl.ngrok-free.dev';
+
+        // Tự động kết nối khi load trang
+        window.onload = async function () {
+            try {
+                const res = await fetch(API_URL + '/health', {
+                    headers: { 'ngrok-skip-browser-warning': '1' }
+                });
+                if (res.ok) {
+                    showConnectionStatus('connected', 'Đã kết nối server');
+                } else {
+                    showConnectionStatus('error', 'Server chưa sẵn sàng');
+                }
+            } catch (e) {
+                showConnectionStatus('error', 'Hãy chạy backend');
+            }
+        };
+
+        function showConnectionStatus(type, text) {
+            $('statusBadge').className = 'status-badge ' + type;
+            $('statusText').textContent = text;
+            if (type === 'connected') {
+                $('statusBadge').querySelector('i').classList.remove('pulse');
+            }
+        }
+
         // Upload events
         $('uploadBox').onclick = () => $('fileInput').click();
         $('fileInput').onchange = e => handleFile(e.target.files[0]);
-        
+
         $('uploadBox').ondragover = e => { e.preventDefault(); $('uploadBox').classList.add('drag'); };
         $('uploadBox').ondragleave = () => $('uploadBox').classList.remove('drag');
         $('uploadBox').ondrop = e => { e.preventDefault(); $('uploadBox').classList.remove('drag'); handleFile(e.dataTransfer.files[0]); };
@@ -390,36 +539,7 @@
             reader.readAsDataURL(f);
         }
 
-        async function checkAPI() {
-            const url = $('apiUrl').value.trim();
-            if (!url) { showStatus('⚠️ Vui lòng nhập URL API!', false); return; }
-            
-            showStatus('⏳ Đang kiểm tra...', true); // Temporary status
-
-            try {
-                // Remove trailing slash if present for consistency
-                const cleanUrl = url.replace(/\/$/, "");
-                const res = await fetch(cleanUrl + '/health', { 
-                    headers: { 'ngrok-skip-browser-warning': '1' } 
-                });
-                
-                if (res.ok) showStatus('✅ Kết nối thành công!', true);
-                else showStatus('❌ Server phản hồi lỗi!', false);
-            } catch (e) {
-                showStatus('❌ Không thể kết nối đến server!', false);
-                console.error(e);
-            }
-        }
-
-        function showStatus(msg, ok) {
-            $('apiStatus').textContent = msg;
-            $('apiStatus').className = ok ? 'ok' : 'err';
-            $('apiStatus').style.display = 'block';
-        }
-
         async function predict() {
-            const url = $('apiUrl').value.trim();
-            if (!url) { showError('Vui lòng nhập và kiểm tra URL API trước!'); return; }
             if (!file) { showError('Vui lòng chọn một hình ảnh!'); return; }
 
             $('predictBtn').style.display = 'none';
@@ -430,16 +550,14 @@
             try {
                 const formData = new FormData();
                 formData.append('file', file);
-                
-                const cleanUrl = url.replace(/\/$/, "");
 
-                const res = await fetch(cleanUrl + '/predict', {
+                const res = await fetch(API_URL + '/predict', {
                     method: 'POST',
                     body: formData,
                     headers: { 'ngrok-skip-browser-warning': '1' }
                 });
                 const data = await res.json();
-                
+
                 $('loading').style.display = 'none';
 
                 if (data.success) {
@@ -455,7 +573,7 @@
                 }
             } catch (e) {
                 $('loading').style.display = 'none';
-                showError('Lỗi kết nối hoặc xử lý: ' + e.message);
+                showError('Lỗi kết nối: ' + e.message);
             }
         }
 
@@ -477,4 +595,5 @@
         }
     </script>
 </body>
+
 </html>
